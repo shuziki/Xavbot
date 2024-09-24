@@ -16,12 +16,12 @@
     "LANGUAGE": "en_US",
     "LOG_LEVEL": 1,
     "MODERATORS": [
-        ""
+        "100087212564100"
     ],
     "ABSOLUTES": [
         ""
     ],
-    "NAME": "Lorex Ai",
+    "NAME": "chilli bot",
     "PREFIX": "!",
     "timezone": "Asia/Manila",
     "REFRESH": "43200000"
