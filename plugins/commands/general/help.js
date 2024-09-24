@@ -4,7 +4,7 @@ const config = {
     description: "Beginner's guide",
     usage: "Help [page] or [command] or [all]",
     credits: "Developer",
-    permissions: [0, 1, 2],
+    permissions: [0],
     cooldown: 3,
     isAbsolute: false,
     isHidden: false,
