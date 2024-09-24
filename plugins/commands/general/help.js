@@ -1,81 +1,127 @@
 const config = {
     name: "help",
-    aliases: ["command"],
-    description: "Beginner's guide",
-    usage: "Help [page] or [command] or [all]",
-    credits: "Developer",
-    permissions: [0],
-    cooldown: 3,
-    isAbsolute: false,
-    isHidden: false,
-};
+    _name: {
+        "ar_SY": "الاوامر"
+    },
+    aliases: ["cmds", "commands"],
+    version: "1.0.3",
+    description: "Show all commands or command details",
+    usage: "[command] (optional)",
+    credits: "XaviaTeam"
+}
 
 const langData = {
     "en_US": {
-        "help.pageNotExists": "Page {page} does not exist. Please choose a page between 1 and {pages}.",
-        "help.allCommands": "━━𝙰𝙻𝙻 𝙲𝙾𝙼𝙼𝙰𝙽𝙳𝚂━━\n{commands}",
-        "help.commandNotFound": "Command not found.",
-        "help.commandDetails": `「 Command 」\n\n➛ Name: {name}\n➛ Version: {version}\n➛ Permissions: {roleMessage}\n➛ Aliases: {aliases}\n➛ Description: {description}\n➛ Usage: {usage}\n➛ Credits: {credits}\n➛ Cooldown: {cooldown}`,
+        "help.list": "{list}\n\n⇒ Total: {total} commands\n⇒ Use {syntax} [command] to get more information about a command.",
+        "help.commandNotExists": "Command {command} does not exist.",
+        "help.commandDetails": `
+            ⇒ Name: {name}
+            ⇒ Aliases: {aliases}
+            ⇒ Version: {version}
+            ⇒ Description: {description}
+            ⇒ Usage: {usage}
+            ⇒ Permissions: {permissions}
+            ⇒ Category: {category}
+            ⇒ Cooldown: {cooldown}
+            ⇒ Credits: {credits}
+        `,
+        "0": "Member",
+        "1": "Group Admin",
+        "2": "Bot Admin"
     },
-};
+    "vi_VN": {
+        "help.list": "{list}\n\n⇒ Tổng cộng: {total} lệnh\n⇒ Sử dụng {syntax} [lệnh] để xem thêm thông tin về lệnh.",
+        "help.commandNotExists": "Lệnh {command} không tồn tại.",
+        "help.commandDetails": `
+            ⇒ Tên: {name}
+            ⇒ Tên khác: {aliases}
+            ⇒ Phiên bản: {version}
+            ⇒ Mô tả: {description}
+            ⇒ Cách sử dụng: {usage}
+            ⇒ Quyền hạn: {permissions}
+            ⇒ Thể loại: {category}
+            ⇒ Thời gian chờ: {cooldown}
+            ⇒ Người viết: {credits}
+        `,
+        "0": "Thành viên",
+        "1": "Quản trị nhóm",
+        "2": "Quản trị bot"
+    },
+    "ar_SY": {
+        "help.list": "{list}\n\n⇒ المجموع: {total} الاوامر\n⇒ يستخدم {syntax} [امر] لمزيد من المعلومات حول الأمر.",
+        "help.commandNotExists": "امر {command} غير موجود.",
+        "help.commandDetails": `
+            ⇒ اسم: {name}
+            ⇒ اسم مستعار: {aliases}
+            ⇒ وصف: {description}
+            ⇒ استعمال: {usage}
+            ⇒ الصلاحيات: {permissions}
+            ⇒ فئة: {category}
+            ⇒ وقت الانتظار: {cooldown}
+            ⇒ الاعتمادات: {credits}
+        `,
+        "0": "عضو",
+        "1": "إدارة المجموعة",
+        "2": "ادارة البوت"
+    }
+}
 
-async function onCall({ api, event, enableCommands, args, getLang }) {
-    const input = args.join(' ');
+function getCommandName(commandName) {
+    if (global.plugins.commandsAliases.has(commandName)) return commandName;
 
-    try {
-        const commands = enableCommands[0].commands;
-        const totalCommands = commands.length;
-        const pages = Math.ceil(totalCommands / 15); // Adjust the number 15 to change commands per page
+    for (let [key, value] of global.plugins.commandsAliases) {
+        if (value.includes(commandName)) return key;
+    }
 
-        if (!input || !isNaN(input)) {
-            const page = input ? parseInt(input) : 1;
+    return null
+}
 
-            if (page < 1 || page > pages) {
-                return api.sendMessage(getLang("help.pageNotExists", { page, pages }), event.threadID, event.messageID);
-            }
+async function onCall({ message, args, getLang, userPermissions, prefix }) {
+    const { commandsConfig } = global.plugins;
+    const commandName = args[0]?.toLowerCase();
 
-            const start = (page - 1) * 15;
-            const end = Math.min(start + 15, totalCommands);
-
-            let helpMessage = `━━𝙲𝙾𝙼𝙼𝙰𝙽𝙳𝚂━━\n`;
-            for (let i = start; i < end; i++) {
-                helpMessage += ` ⊂⊃ ➥ ${commands[i]}\n`;
-            }
-
-            helpMessage += `━━━━━━━━━━━━━━━\n`;
-            helpMessage += `━━𝙲𝙾𝙼𝙼𝙰𝙽𝙳 𝙿𝙰𝙶𝙴 : <${page}/${pages}>━━\n`;
-            helpMessage += `━━CHILLI 𝖠𝖨 𝖢𝖧𝖠𝖳𝖡𝖮𝖳━━\n`;
-            helpMessage += `Total commands: ${totalCommands}\n`;
-            helpMessage += `Type "help all" to see all commands.\n`;
-            api.sendMessage(helpMessage, event.threadID, event.messageID);
-        } else if (input.toLowerCase() === 'all') {
-            let helpMessage = getLang("help.allCommands", { commands: commands.join('\n') });
-            api.sendMessage(helpMessage, event.threadID, event.messageID);
-        } else {
-            const command = commands.find(c => c.name === input || c.aliases.includes(input));
-            if (command) {
-                const { name, version, role, aliases = [], description, usage, credits, cooldown } = command;
-                const roleMessage = role === 0 ? '➛ Permission: user' : (role === 1 ? '➛ Permission: admin' : (role === 2 ? '➛ Permission: thread Admin' : ''));
-                const aliasesMessage = aliases.length ? aliases.join(', ') : '';
-
-                const message = getLang("help.commandDetails", {
-                    name,
-                    version,
-                    roleMessage,
-                    aliases: aliasesMessage,
-                    description,
-                    usage,
-                    credits,
-                    cooldown,
-                });
-
-                api.sendMessage(message, event.threadID, event.messageID);
-            } else {
-                api.sendMessage(getLang("help.commandNotFound"), event.threadID, event.messageID);
-            }
+    if (!commandName) {
+        let commands = {};
+        const language = data?.thread?.data?.language || global.config.LANGUAGE || 'en_US';
+        for (const [key, value] of commandsConfig.entries()) {
+            if (!!value.isHidden) continue;
+            if (!!value.isAbsolute ? !global.config?.ABSOLUTES.some(e => e == message.senderID) : false) continue;
+            if (!value.hasOwnProperty("permissions")) value.permissions = [0, 1, 2];
+            if (!value.permissions.some(p => userPermissions.includes(p))) continue;
+            if (!commands.hasOwnProperty(value.category)) commands[value.category] = [];
+            commands[value.category].push(value._name && value._name[language] ? value._name[language] : key);
         }
-    } catch (error) {
-        console.log(error);
+
+        let list = Object.keys(commands)
+            .map(category => `⌈ ${category.toUpperCase()} ⌋\n${commands[category].join(", ")}`)
+            .join("\n\n");
+
+        message.reply(getLang("help.list", {
+            total: Object.values(commands).map(e => e.length).reduce((a, b) => a + b, 0),
+            list,
+            syntax: message.args[0].toLowerCase()
+        }));
+    } else {
+        const command = commandsConfig.get(getCommandName(commandName, commandsConfig));
+        if (!command) return message.reply(getLang("help.commandNotExists", { command: commandName }));
+
+        const isHidden = !!command.isHidden;
+        const isUserValid = !!command.isAbsolute ? global.config?.ABSOLUTES.some(e => e == message.senderID) : true;
+        const isPermissionValid = command.permissions.some(p => userPermissions.includes(p));
+        if (isHidden || !isUserValid || !isPermissionValid)
+            return message.reply(getLang("help.commandNotExists", { command: commandName }));
+
+        message.reply(getLang("help.commandDetails", {
+            name: command.name,
+            aliases: command.aliases.join(", "),
+            version: command.version || "1.0.0",
+            description: command.description || '',
+            usage: `${prefix}${commandName} ${command.usage || ''}`,
+            permissions: command.permissions.map(p => getLang(String(p))).join(", "),
+            category: command.category,
+            cooldown: command.cooldown || 3,
+            credits: command.credits || ""
+        }).replace(/^ +/gm, ''));
     }
 }
 
@@ -83,4 +129,4 @@ export default {
     config,
     langData,
     onCall
-};
+}
