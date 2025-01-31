@@ -3,7 +3,7 @@ import { writeFileSync } from "fs";
 import { resolve as resolvePath } from "path";
 import crypto from "crypto";
 import { execSync } from "child_process";
-import login from "@xaviabot/fca-unofficial";
+import login from "ws3-fca";
 import replitDB from "@replit/database";
 
 import logger from "./var/modules/logger.js";
