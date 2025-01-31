@@ -24,7 +24,7 @@ const langData = {
 async function onCall({ message, args, getLang, data, userPermissions, prefix }) {
     if (args.length === 0) {
         // If no arguments (prompt) are provided, send a message back.
-        return message.send(getLang("message"));
+        return message.reply(getLang("message"));
     }
 
     const input = args.join(" "); // Combine arguments into a single prompt
@@ -32,17 +32,16 @@ async function onCall({ message, args, getLang, data, userPermissions, prefix })
 
     try {
         // Use axios to make the API request
-        const { data } = await axios.get('https://gpt4-api-zl5u.onrender.com/api/gpt4o', {
+        const { data } = await axios.get('https://api.shizuki.linkpc.net/api/mixtral', {
             params: {
-                prompt: input,
-                uid: userId
+                q: input,
             }
         });
 
         if (data && data.response) {
-            message.send(data.response); // Send AI's response to the user
+            message.reply(data.response); // Send AI's response to the user
         } else {
-            message.send("Sorry, I couldn't understand the response from the AI.");
+            message.reply("Sorry, I couldn't understand the response from the AI.");
         }
     } catch (error) {
         message.send("An error occurred while trying to reach the AI. Please try again later.");
