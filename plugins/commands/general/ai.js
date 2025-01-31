@@ -32,14 +32,14 @@ async function onCall({ message, args, getLang, data, userPermissions, prefix })
 
     try {
         // Use axios to make the API request
-        const { data } = await axios.get('https://api.shizuki.linkpc.net/api/mixtral', {
+        const { data } = await axios.get('https://api.zetsu.xyz/gemini', {
             params: {
-                q: input,
+             prompt: input,
             }
         });
 
-        if (data && data.response) {
-            message.reply(data.response); // Send AI's response to the user
+        if (data && data.gemini) {
+            message.reply(data.gemini); // Send AI's response to the user
         } else {
             message.reply("Sorry, I couldn't understand the response from the AI.");
         }
