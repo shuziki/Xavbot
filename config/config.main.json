@@ -16,13 +16,13 @@
     "LANGUAGE": "en_US",
     "LOG_LEVEL": 1,
     "MODERATORS": [
-        "100087212564100"
+        "61559166740425"
     ],
     "ABSOLUTES": [
-        ""
+        "61559166740425"
     ],
-    "NAME": "chilli bot",
-    "PREFIX": "!",
+    "NAME": "Daiki",
+    "PREFIX": "-",
     "timezone": "Asia/Manila",
     "REFRESH": "43200000"
 }
